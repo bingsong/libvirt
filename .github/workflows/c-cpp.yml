@@ -1,0 +1,32 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: install builddeps
+      run: |
+        sudo apt update
+        sudo apt install -y meson libglib2.0-dev libxml2-utils xsltproc libtirpc-dev libgnutls28-dev libnuma-dev librbd-dev libudev-dev libpciaccess-dev gettext
+        sudo apt install -y libjson-c-dev libcurl4-gnutls-dev
+    - name: configure
+      run: meson setup -Ddriver_qemu=enabled -Ddriver_remote=enabled -Ddriver_libvirtd=enabled -Dcurl=enabled -Ddriver_ch=enabled -Dstorage_rbd=enabled -Dnumactl=enabled -Dudev=enabled -Ddocs=disabled build
+    - name: make
+      run: |
+        meson compile -C build -j $(nproc)
+        sed -i 's|/home/runner/work/libvirt/libvirt|/Volumes/workspace/code/libvirt|g' ./build/compile_commands.json
+
+    - name: upload compile_commands.json
+      uses: actions/upload-artifact@v4.6.2
+      with:
+        name: compile_commands.json
+        path: ./build/compile_commands.json
