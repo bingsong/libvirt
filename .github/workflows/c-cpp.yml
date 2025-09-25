@@ -19,7 +19,7 @@ jobs:
         sudo apt install -y meson libglib2.0-dev libxml2-utils xsltproc libtirpc-dev libgnutls28-dev libnuma-dev librbd-dev libudev-dev libpciaccess-dev gettext
         sudo apt install -y libjson-c-dev libcurl4-gnutls-dev
     - name: configure
-      run: meson setup -Ddriver_qemu=enabled -Ddriver_remote=enabled -Ddriver_libvirtd=enabled -Dcurl=enabled -Ddriver_ch=enabled -Dstorage_rbd=enabled -Dnumactl=enabled -Dudev=enabled -Ddocs=disabled build
+      run: CC=clang CXX=clang++ meson setup -Ddriver_qemu=enabled -Ddriver_remote=enabled -Ddriver_libvirtd=enabled -Dcurl=enabled -Ddriver_ch=enabled -Dstorage_rbd=enabled -Dnumactl=enabled -Dudev=enabled -Ddocs=disabled build
     - name: make
       run: |
         meson compile -C build -j $(nproc)
